@@ -1,5 +1,7 @@
-Composer plugin for bower/npm assets
-====================================
+Composer Asset Plugin
+=====================
+
+**Composer plugin for bower/npm assets**
 
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/composer-asset-plugin/v/stable)](https://packagist.org/packages/hiqdev/composer-asset-plugin)
 [![Total Downloads](https://poser.pugx.org/hiqdev/composer-asset-plugin/downloads)](https://packagist.org/packages/hiqdev/composer-asset-plugin)

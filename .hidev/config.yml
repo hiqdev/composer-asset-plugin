@@ -2,7 +2,7 @@ package:
     type:           composer-plugin
     name:           composer-asset-plugin
     namespace:      hiqdev\composerassetplugin
-    composer:       Composer Asset Plugin
+    headline:       Composer Asset Plugin
     title:          Composer plugin for bower/npm assets
     forum:          http://forum.hiqdev.com/
     keywords:       composer, plugin, assets, bower, npm
