@@ -19,7 +19,14 @@ use Composer\Script\Event;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    /**
+     * @var Composer
+     */
     protected $composer;
+
+    /**
+     * @var IOInterface
+     */
     protected $io;
 
     public function activate(Composer $composer, IOInterface $io)
@@ -45,10 +52,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
+    /**
+     * Perform install.
+     *
+     * @param Event $event
+     */
     public function onPostInstall(Event $event)
     {
     }
 
+    /**
+     * Perform update.
+     *
+     * @param Event $event
+     */
     public function onPostUpdate(Event $event)
     {
     }
