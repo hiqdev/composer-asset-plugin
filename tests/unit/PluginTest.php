@@ -11,9 +11,20 @@
 
 namespace hiqdev\composerassetplugin\tests\unit;
 
+use hiqdev\composerassetplugin\Plugin;
+
 class PluginTest extends \PHPUnit_Framework_TestCase
 {
-    public function testIt()
+    private $object;
+
+    public function setUp()
     {
+        parent::setUp();
+        $this->object = new Plugin();
+    }
+
+    public function testGetSubscribedEvents()
+    {
+        $this->assertInternalType('array', $this->object->getSubscribedEvents());
     }
 }
