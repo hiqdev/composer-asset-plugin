@@ -96,7 +96,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostUpdate(Event $event)
     {
-        die('adfs');
         $this->scanPackages();
         $this->installPackages();
     }
@@ -108,7 +107,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function getPackages()
     {
-        if ($this->packages = null) {
+        if ($this->packages === null) {
             $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         }
 
