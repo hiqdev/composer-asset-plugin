@@ -18,9 +18,12 @@ use Composer\Json\JsonFile;
 use Composer\Package\CompletePackage;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
+use Composer\Script\ScriptEvents;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    const LOCK_FILE = 'composer-asset-plugin.lock';
+
     /**
      * @var Composer
      */
@@ -32,6 +35,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected $io;
 
     protected $managers = ['bower', 'npm'];
+
+    protected $packages;
 
     /**
      * Initializes the plugin object with passed $composer and $io.
@@ -46,9 +51,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io = $io;
         foreach ($this->managers as $m) {
             $class = 'hiqdev\composerassetplugin\\' . ucfirst($m);
-            $ms[$m] = new $class($this);
+            $managers[$m] = new $class($this);
         }
-        $this->managers = $ms;
+        $this->managers = $managers;
     }
 
     /**
@@ -59,10 +64,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'post-install-cmd' => [
+            ScriptEvents::POST_INSTALL_CMD => [
                 ['onPostInstall', 0],
             ],
-            'post-update-cmd' => [
+            ScriptEvents::POST_UPDATE_CMD => [
                 ['onPostUpdate', 0],
             ],
         ];
@@ -75,7 +80,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostInstall(Event $event)
     {
-        $lockFile = new JsonFile('composer-asset-plugin.lock');
+        $lockFile = new JsonFile(LOCK_FILE);
         if ($lockFile->exists()) {
             $this->loadPackages($lockFile);
             $this->installPackages();
@@ -91,8 +96,23 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostUpdate(Event $event)
     {
+        die('adfs');
         $this->scanPackages();
         $this->installPackages();
+    }
+
+    public function setPackages(array $packages)
+    {
+        $this->packages = $packages;
+    }
+
+    public function getPackages()
+    {
+        if ($this->packages = null) {
+            $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        }
+
+        return $this->packages;
     }
 
     /**
@@ -100,8 +120,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function scanPackages()
     {
-        $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
-        foreach ($packages as $package) {
+        foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackage) {
                 foreach ($this->managers as $m) {
                     $m->scanPackage($package);
