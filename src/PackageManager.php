@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * Composer plugin for bower/npm assets
+ *
+ * @link      https://github.com/hiqdev/composer-asset-plugin
+ * @package   composer-asset-plugin
+ * @license   BSD-3-Clause
+ * @copyright Copyright (c) 2015, HiQDev (http://hiqdev.com/)
+ */
+
 namespace hiqdev\composerassetplugin;
 
 use Composer\Package\CompletePackage;
@@ -7,8 +16,8 @@ use Composer\Package\CompletePackage;
 /**
  * Abstract package manager class.
  */
-abstract class PackageManager {
-
+abstract class PackageManager
+{
     /**
      * The plugin.
      * @var Plugin

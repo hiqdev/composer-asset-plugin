@@ -11,9 +11,9 @@
 
 namespace hiqdev\composerassetplugin\tests\unit;
 
-use hiqdev\composerassetplugin\Plugin;
 use Composer\Composer;
 use Composer\Config;
+use hiqdev\composerassetplugin\Plugin;
 
 class PluginTest extends \PHPUnit_Framework_TestCase
 {
