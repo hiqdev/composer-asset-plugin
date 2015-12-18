@@ -4,6 +4,7 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - 8764f6c 2015-12-18 adding real code (sol@hiqdev.com)
     - 8c599f1 2015-12-17 added zero test (sol@hiqdev.com)
     - 1a3b645 2015-12-17 inited (sol@hiqdev.com)
 
