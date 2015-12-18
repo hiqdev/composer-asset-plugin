@@ -1,0 +1,12 @@
+{
+    "name": "test/test",
+    "type": "project",
+    "repositories": [{
+        "type": "vcs",
+        "url":  "https://github.com/hiqsol/yii2-bootstrap"
+    }],
+    "require": {
+        "hiqdev/composer-asset-plugin": "@dev",
+        "yiisoft/yii2-bootstrap": "*@dev"
+    }
+}
