@@ -95,8 +95,7 @@ abstract class PackageManager
             foreach ($packages as $name => $version) {
                 $this->config[$key][$name] = isset($this->config[$key][$name])
                     ? $this->mergeVersions($this->config[$key][$name], $version)
-                    : $version
-                ;
+                    : $version;
             }
         }
     }

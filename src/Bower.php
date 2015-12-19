@@ -24,7 +24,7 @@ class Bower extends PackageManager
 
     public function installPackages()
     {
-        $this->plugin->io->write("installing bower dependencies...");
+        $this->plugin->io->write('installing bower dependencies...');
         $this->writeConfig($this->file, $this->config);
     }
 }
