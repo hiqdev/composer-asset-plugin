@@ -18,11 +18,38 @@ namespace hiqdev\composerassetplugin;
  */
 class Npm extends PackageManager
 {
+    /**
+     * @inheritdoc
+     */
     protected $name = 'npm';
 
-    protected $file = 'package.json';
+    /**
+     * @inheritdoc
+     */
+    public $file = 'package.json';
 
-    public function installPackages()
+    /**
+     * @inheritdoc
+     */
+    public $phpPackage = 'non existent npmphp';
+
+    /**
+     * Minimal npm config.
+     */
+    protected $config = [
+        'name'        => 'composer-asset-plugin',
+        'description' => "This file is auto-generated with 'hiqdev/composer-asset-plugin'.",
+        'readme'      => ' ',
+        'repository'  => array('type'=>'git'),
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    protected function runInstall()
     {
+        if ($this->passthru('install')) {
+            $this->plugin->io->write('failed ' . $name . ' install');
+        }
     }
 }

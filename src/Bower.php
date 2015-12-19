@@ -18,13 +18,33 @@ namespace hiqdev\composerassetplugin;
  */
 class Bower extends PackageManager
 {
+    /**
+     * @inheritdoc
+     */
     protected $name = 'bower';
 
-    protected $file = 'bower.json';
+    /**
+     * @inheritdoc
+     */
+    public $file = 'bower.json';
 
-    public function installPackages()
+    /**
+     * @inheritdoc
+     */
+    public $phpPackage = 'beelab/bowerphp';
+
+    /**
+     * @inheritdoc
+     */
+    public $phpBin = 'bowerphp';
+
+    /**
+     * @inheritdoc
+     */
+    protected function runInstall()
     {
-        $this->plugin->io->write('installing bower dependencies...');
-        $this->writeConfig($this->file, $this->config);
+        if ($this->passthru('install')) {
+            $this->plugin->io->write('failed ' . $name . ' install');
+        }
     }
 }

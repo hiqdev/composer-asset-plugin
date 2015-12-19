@@ -134,12 +134,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Load packages from given lock file.
+     * @param JsonFile $lockFile
      */
     protected function loadPackages(JsonFile $lockFile)
     {
         $lock = $lockFile->read();
         foreach ($this->managers as $name => $m) {
-            $m->loadPackages($lock[$name]);
+            $m->setConfig($lock[$name]);
         }
     }
 

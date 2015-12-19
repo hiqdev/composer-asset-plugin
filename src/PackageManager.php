@@ -27,34 +27,68 @@ abstract class PackageManager
      */
     protected $plugin;
 
+    /**
+     * Package manager name: bower or npm.
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Package config file: bower.json or package.json
+     * @var string
+     */
+    public $file;
+
+    /**
+     * Path to package manager binary.
+     * @var string
+     */
+    public $bin;
+
+    /**
+     * Package name of PHP version of package manager.
+     * @var string
+     */
+    public $phpPackage;
+
+    /**
+     * Binary name of PHP version of package manager.
+     * @var string
+     */
+    protected $phpBin;
+
+    /**
+     * Package config. Initially holds default config.
+     */
     protected $config = [];
 
-    protected $opTable = [
+    /**
+     * Conversion table.
+     * @var string
+     */
+    protected $keyTable = [
         'require'     => 'dependencies',
         'require-dev' => 'devDependencies',
     ];
 
-    protected $file;
-
-    protected $name;
-
-    protected $jsonFile;
-
     /**
-     * Reads config file or dist config if exists.
+     * Reads config file or dist config if exists, merges with default config.
      */
     public function __construct(Plugin $plugin)
     {
         $this->plugin = $plugin;
         $dist = $this->file . '.dist';
-        $this->config = $this->readConfig(file_exists($dist) ? $dist : $this->file);
+        $this->config = array_merge(
+            $this->config,
+            $this->readConfig(file_exists($dist) ? $dist : $this->file)
+        );
     }
 
     public function readConfig($file)
     {
         $jsonFile = new JsonFile($file);
         $config = $jsonFile->exists() ? $jsonFile->read() : [];
-        foreach ($this->opTable as $key) {
+        foreach ($this->keyTable as $key) {
             if (!isset($config[$key])) {
                 $config[$key] = [];
             }
@@ -64,7 +98,7 @@ abstract class PackageManager
 
     public function writeConfig($file, $config)
     {
-        foreach ($this->opTable as $key) {
+        foreach ($this->keyTable as $key) {
             if (isset($config[$key]) && !$config[$key]) {
                 unset($config[$key]);
             }
@@ -91,7 +125,7 @@ abstract class PackageManager
     protected function mergeConfig($config)
     {
         foreach ($config as $key => $packages) {
-            $key = $this->opTable[$key];
+            $key = $this->keyTable[$key];
             foreach ($packages as $name => $version) {
                 $this->config[$key][$name] = isset($this->config[$key][$name])
                     ? $this->mergeVersions($this->config[$key][$name], $version)
@@ -128,10 +162,88 @@ abstract class PackageManager
         return !$version || $version === '*' || $version === '>=0.0.0';
     }
 
-    public function loadPackages(array $config)
+    public function setConfig(array $config)
     {
         $this->config = $config;
     }
 
-    abstract public function installPackages();
+    /**
+     * Install packages.
+     */
+    public function installPackages()
+    {
+        $this->plugin->io->write('installing ' . $this->name . ' dependencies...');
+        $this->writeConfig($this->file, $this->config);
+        $this->runInstall();
+    }
+
+    /**
+     * Run installation. Specific for every package manager.
+     */
+    abstract protected function runInstall();
+
+    /**
+     * Prepares given command arguments.
+     * @param string|array $args
+     * @return string
+     */
+    public function prepareCommand($args = '')
+    {
+        if (is_string($args)) {
+            $res = ' ' . trim($args);
+        } else {
+            $res = '';
+            foreach ($args as $a) {
+                $res .= ' ' . escapeshellarg($a);
+            }
+        }
+
+        return $res;
+    }
+
+    /**
+     * Prepares arguments and runs it with passthru.
+     * @param string $args
+     * @return int exit code
+     */
+    public function passthru($args = '')
+    {
+        passthru($this->getBin() . $this->prepareCommand($args), $exitcode);
+        return $exitcode;
+    }
+
+    /**
+     * Set path to binary.
+     * @param string $value
+     */
+    public function setBin($value)
+    {
+        $this->bin = $value;
+    }
+
+    /**
+     * Get path to binary.
+     * @return string
+     */
+    public function getBin()
+    {
+        if ($this->bin === null) {
+            $this->bin = $this->detectBin();
+        }
+
+        return $this->bin;
+    }
+
+    /**
+     * Find path binary.
+     * @return string
+     */
+    public function detectBin()
+    {
+        if (isset($this->plugin->getPackages()[$this->phpPackage])) {
+            return './vendor/bin/' . $this->phpBin;
+        }
+
+        return $this->name;
+    }
 }
