@@ -4,6 +4,7 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - 520850f 2015-12-19 + read/merge/write config (sol@hiqdev.com)
     - 6c713c8 2015-12-18 php-cs-fixed (sol@hiqdev.com)
     - 5b73e63 2015-12-18 + more tests (sol@hiqdev.com)
     - 253c49d 2015-12-18 + get/setPackages (sol@hiqdev.com)
