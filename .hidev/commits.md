@@ -4,6 +4,7 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - c45445b 2015-12-19 + testing bower.json files (sol@hiqdev.com)
     - 520850f 2015-12-19 + read/merge/write config (sol@hiqdev.com)
     - 6c713c8 2015-12-18 php-cs-fixed (sol@hiqdev.com)
     - 5b73e63 2015-12-18 + more tests (sol@hiqdev.com)
