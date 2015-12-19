@@ -19,9 +19,14 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 
+/**
+ * Plugin class.
+ *
+ * @author Andrii Vasyliev <sol@hiqdev.com>
+ */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    const LOCK_FILE = 'composer-asset-plugin.lock';
+    public $file = 'composer-asset-plugin.lock';
 
     /**
      * @var Composer
@@ -31,7 +36,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * @var IOInterface
      */
-    protected $io;
+    public $io;
 
     protected $managers = ['bower', 'npm'];
 
@@ -79,7 +84,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostInstall(Event $event)
     {
-        $lockFile = new JsonFile(LOCK_FILE);
+        $lockFile = new JsonFile($this->file);
         if ($lockFile->exists()) {
             $this->loadPackages($lockFile);
             $this->installPackages();

@@ -13,10 +13,14 @@ namespace hiqdev\composerassetplugin;
 
 /**
  * NPM package manager class.
+ *
+ * @author Andrii Vasyliev <sol@hiqdev.com>
  */
 class Npm extends PackageManager
 {
     protected $name = 'npm';
+
+    protected $file = 'package.json';
 
     public function installPackages()
     {

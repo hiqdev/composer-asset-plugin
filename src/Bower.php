@@ -13,12 +13,18 @@ namespace hiqdev\composerassetplugin;
 
 /**
  * Bower package manager class.
+ *
+ * @author Andrii Vasyliev <sol@hiqdev.com>
  */
 class Bower extends PackageManager
 {
     protected $name = 'bower';
 
+    protected $file = 'bower.json';
+
     public function installPackages()
     {
+        $this->plugin->io->write("installing bower dependencies...");
+        $this->writeConfig($this->file, $this->config);
     }
 }
