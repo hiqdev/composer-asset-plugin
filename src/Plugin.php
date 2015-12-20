@@ -160,11 +160,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Get path to vendor dir from composer.
+     * Get absolute path to composer vendor dir.
      * @return string
      */
     public function getVendorDir()
     {
-        return $this->composer->getConfig()->get('vendor-dir');
+        return dirname(__DIR__) . $this->composer->getConfig()->get('vendor-dir');
     }
 }
