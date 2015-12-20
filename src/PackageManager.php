@@ -34,7 +34,7 @@ abstract class PackageManager
     protected $name;
 
     /**
-     * Package config file: bower.json or package.json
+     * Package config file: bower.json or package.json.
      * @var string
      */
     public $file;
@@ -259,5 +259,4 @@ abstract class PackageManager
 
         return $this->name;
     }
-
 }

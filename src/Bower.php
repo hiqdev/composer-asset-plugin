@@ -19,22 +19,22 @@ namespace hiqdev\composerassetplugin;
 class Bower extends PackageManager
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected $name = 'bower';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public $file = 'bower.json';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public $phpPackage = 'beelab/bowerphp';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public $phpBin = 'bowerphp';
 
