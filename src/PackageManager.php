@@ -77,10 +77,11 @@ abstract class PackageManager
     public function __construct(Plugin $plugin)
     {
         $this->plugin = $plugin;
-        $dist = $this->file . '.dist';
+        //$dist = $this->file . '.dist';
         $this->config = array_merge(
             $this->config,
-            $this->readConfig(file_exists($dist) ? $dist : $this->file)
+            $this->readConfig($this->file)
+            //$this->readConfig(file_exists($dist) ? $dist : $this->file)
         );
     }
 
@@ -162,25 +163,48 @@ abstract class PackageManager
         return !$version || $version === '*' || $version === '>=0.0.0';
     }
 
+    /**
+     * Set config.
+     * @param array $config
+     */
     public function setConfig(array $config)
     {
         $this->config = $config;
     }
 
     /**
-     * Install packages.
+     * Run given action: show notice, write config and run `perform`.
+     * @param string $action
      */
-    public function installPackages()
+    public function runAction($action)
     {
-        $this->plugin->io->write('installing ' . $this->name . ' dependencies...');
+        $doing = trim($action, 'e') . 'ing';
+        $this->plugin->io->write($doing . ' ' . $this->name . ' dependencies...');
         $this->writeConfig($this->file, $this->config);
-        $this->runInstall();
+        $this->perform($action);
     }
 
     /**
      * Run installation. Specific for every package manager.
+     * @param string $action
      */
-    abstract protected function runInstall();
+    protected function perform($action)
+    {
+        if ($this->passthru($action)) {
+            $this->plugin->io->write('failed ' . $name . ' ' . $action);
+        }
+    }
+
+    /**
+     * Prepares arguments and runs it with passthru.
+     * @param string $args
+     * @return int exit code
+     */
+    public function passthru($args = '')
+    {
+        passthru($this->getBin() . $this->prepareCommand($args), $exitcode);
+        return $exitcode;
+    }
 
     /**
      * Prepares given command arguments.
@@ -199,17 +223,6 @@ abstract class PackageManager
         }
 
         return $res;
-    }
-
-    /**
-     * Prepares arguments and runs it with passthru.
-     * @param string $args
-     * @return int exit code
-     */
-    public function passthru($args = '')
-    {
-        passthru($this->getBin() . $this->prepareCommand($args), $exitcode);
-        return $exitcode;
     }
 
     /**
@@ -241,9 +254,10 @@ abstract class PackageManager
     public function detectBin()
     {
         if (isset($this->plugin->getPackages()[$this->phpPackage])) {
-            return './vendor/bin/' . $this->phpBin;
+            return $this->plugin->getVendorDir() . '/bin/' . $this->phpBin;
         }
 
         return $this->name;
     }
+
 }

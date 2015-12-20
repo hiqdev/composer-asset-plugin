@@ -42,14 +42,4 @@ class Npm extends PackageManager
         'readme'      => ' ',
         'repository'  => array('type'=>'git'),
     ];
-
-    /**
-     * @inheritdoc
-     */
-    protected function runInstall()
-    {
-        if ($this->passthru('install')) {
-            $this->plugin->io->write('failed ' . $name . ' install');
-        }
-    }
 }

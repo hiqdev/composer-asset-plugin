@@ -39,12 +39,10 @@ class Bower extends PackageManager
     public $phpBin = 'bowerphp';
 
     /**
-     * @inheritdoc
+     * Minimal bower config.
      */
-    protected function runInstall()
-    {
-        if ($this->passthru('install')) {
-            $this->plugin->io->write('failed ' . $name . ' install');
-        }
-    }
+    protected $config = [
+        'name'        => 'composer-asset-plugin',
+        'description' => "This file is auto-generated with 'hiqdev/composer-asset-plugin'.",
+    ];
 }

@@ -38,6 +38,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public $io;
 
+    /**
+     * List of package managers instances.
+     * Initialized at activate.
+     * @var array
+     */
     protected $managers = ['bower', 'npm'];
 
     protected $packages;
@@ -78,8 +83,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Perform install.
-     *
+     * Perform install. Called by composer after install.
      * @param Event $event
      */
     public function onPostInstall(Event $event)
@@ -87,21 +91,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $lockFile = new JsonFile($this->file);
         if ($lockFile->exists()) {
             $this->loadPackages($lockFile);
-            $this->installPackages();
         } else {
-            $this->onPostUpdate($event);
+            $this->scanPackages();
         }
+        $this->runAction('install');
     }
 
     /**
-     * Perform update.
-     *
+     * Perform update. Called by composer after update.
      * @param Event $event
      */
     public function onPostUpdate(Event $event)
     {
         $this->scanPackages();
-        $this->installPackages();
+        $this->runAction('update');
     }
 
     public function setPackages(array $packages)
@@ -146,11 +149,22 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Install packages after loading/scanning.
+     * @param string $action
      */
-    protected function installPackages()
+    protected function runAction($action)
     {
+        chdir($this->getVendorDir());
         foreach ($this->managers as $m) {
-            $m->installPackages();
+            $m->runAction($action);
         }
+    }
+
+    /**
+     * Get path to vendor dir from composer.
+     * @return string
+     */
+    public function getVendorDir()
+    {
+        return $this->composer->getConfig()->get('vendor-dir');
     }
 }
