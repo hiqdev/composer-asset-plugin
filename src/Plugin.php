@@ -24,7 +24,6 @@ use Composer\Script\ScriptEvents;
  * Plugin class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
- * @package hiqdev\composerassetplugin
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -51,7 +50,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $managers = [
         'bower' => 'hiqdev\composerassetplugin\Bower',
-        'npm' => 'hiqdev\composerassetplugin\Npm'
+        'npm' => 'hiqdev\composerassetplugin\Npm',
     ];
 
     /**
@@ -79,7 +78,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Returns list of events the plugin is subscribed to
+     * Returns list of events the plugin is subscribed to.
      *
      * @return array list of events
      */
@@ -96,7 +95,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Perform install. Called by composer after install
+     * Perform install. Called by composer after install.
      *
      * @param Event $event
      * @void
@@ -124,7 +123,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Sets [[packages]]
+     * Sets [[packages]].
      *
      * @param PackageInterface[] $packages
      */
@@ -134,7 +133,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Gets [[packages]]
+     * Gets [[packages]].
      * @return \Composer\Package\PackageInterface[]
      */
     public function getPackages()
@@ -147,7 +146,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Scan packages from the composer objects
+     * Scan packages from the composer objects.
      * @void
      */
     protected function scanPackages()
@@ -162,7 +161,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Load packages from given lock file
+     * Load packages from given lock file.
      *
      * @param JsonFile $lockFile
      * @void

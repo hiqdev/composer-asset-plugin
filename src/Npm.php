@@ -12,10 +12,9 @@
 namespace hiqdev\composerassetplugin;
 
 /**
- * NPM package manager class
+ * NPM package manager class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
- * @package hiqdev\composerassetplugin
  */
 class Npm extends PackageManager
 {

@@ -11,5 +11,5 @@ package:
         native npm and native or PHP bower.
 
 require:
-    hiqdev/hidev-vendor: "*"
+    hiqdev/hidev-vendor: "*@dev"
     hiqdev/hidev-php:    "*"

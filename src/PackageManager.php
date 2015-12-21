@@ -18,7 +18,6 @@ use Composer\Package\CompletePackage;
  * Abstract package manager class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
- * @package hiqdev\composerassetplugin
  */
 abstract class PackageManager
 {
@@ -82,7 +81,7 @@ abstract class PackageManager
     }
 
     /**
-     * Reads the JSON config from the $path and returns extracts dependencies as array
+     * Reads the JSON config from the $path and returns extracts dependencies as array.
      *
      * @param string $path path to the Json file
      * @return array|mixed
@@ -100,7 +99,7 @@ abstract class PackageManager
     }
 
     /**
-     * Saves the dependencies described in $config to the config file
+     * Saves the dependencies described in $config to the config file.
      *
      * @param string $path
      * @param array $config
@@ -119,7 +118,7 @@ abstract class PackageManager
 
     /**
      * Scans the $package and extracts `require` and `require-dev` dependencies to
-     * the [[config]]
+     * the [[config]].
      *
      * @param CompletePackage $package
      * @see mergeConfig()
@@ -182,7 +181,7 @@ abstract class PackageManager
     /**
      * Check if $a is more then $b, like: a="1.1 || 2.2" b="1.1"
      * Possible optimization.
-     * // TODO Rename and implement
+     * // TODO Rename and implement.
      * @param string $a
      * @param string $b
      * @return boolean
@@ -193,7 +192,7 @@ abstract class PackageManager
     }
 
     /**
-     * Checks whether the $version represents any possible version
+     * Checks whether the $version represents any possible version.
      *
      * @param string $version
      * @return boolean
@@ -204,7 +203,7 @@ abstract class PackageManager
     }
 
     /**
-     * Set config
+     * Set config.
      * @param array $config
      */
     public function setConfig(array $config)
@@ -249,7 +248,7 @@ abstract class PackageManager
     }
 
     /**
-     * Prepares given command arguments
+     * Prepares given command arguments.
      * @param array $arguments
      * @return string
      */
@@ -264,7 +263,7 @@ abstract class PackageManager
     }
 
     /**
-     * Set path to binary executable file
+     * Set path to binary executable file.
      * @param $bin
      * @internal param string $value
      */
@@ -274,7 +273,7 @@ abstract class PackageManager
     }
 
     /**
-     * Get path to the binary executable file
+     * Get path to the binary executable file.
      * @return string
      */
     public function getBin()
@@ -287,7 +286,7 @@ abstract class PackageManager
     }
 
     /**
-     * Find path to the binary
+     * Find path to the binary.
      * @return string
      */
     public function detectBin()

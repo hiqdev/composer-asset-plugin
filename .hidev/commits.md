@@ -3,6 +3,7 @@ hiqdev/composer-asset-plugin commits history
 
 ## Under development
 
+    - ad488f3 2015-12-21 tidied up code (d.naumenko.a@gmail.com)
 - Added basics
     - 2fbe575 2015-12-20 fixed getVendorDir to return absolute path (sol@hiqdev.com)
     - 0fa1795 2015-12-20 - testing bower.json/.dist (sol@hiqdev.com)

@@ -16,8 +16,7 @@ use Composer\Config;
 use hiqdev\composerassetplugin\Plugin;
 
 /**
- * Class PluginTest
- * @package hiqdev\composerassetplugin\tests\unit
+ * Class PluginTest.
  */
 class PluginTest extends \PHPUnit_Framework_TestCase
 {

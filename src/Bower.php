@@ -15,7 +15,6 @@ namespace hiqdev\composerassetplugin;
  * Bower package manager class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
- * @package hiqdev\composerassetplugin
  */
 class Bower extends PackageManager
 {
