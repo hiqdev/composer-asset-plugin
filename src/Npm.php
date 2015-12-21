@@ -12,9 +12,10 @@
 namespace hiqdev\composerassetplugin;
 
 /**
- * NPM package manager class.
+ * NPM package manager class
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
+ * @package hiqdev\composerassetplugin
  */
 class Npm extends PackageManager
 {
@@ -34,7 +35,7 @@ class Npm extends PackageManager
     public $phpPackage = 'non existent npmphp';
 
     /**
-     * Minimal npm config.
+     * @var array Minimal bower config
      */
     protected $config = [
         'name'        => 'composer-asset-plugin',

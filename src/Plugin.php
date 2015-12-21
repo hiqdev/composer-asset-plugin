@@ -15,6 +15,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
+use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -23,13 +24,17 @@ use Composer\Script\ScriptEvents;
  * Plugin class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
+ * @package hiqdev\composerassetplugin
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    public $file = 'composer-asset-plugin.lock';
+    /**
+     * @var string the filename of a lock file. Defaults to `composer-asset-plugin.lock`
+     */
+    public $lockFile = 'composer-asset-plugin.lock';
 
     /**
-     * @var Composer
+     * @var Composer instance
      */
     protected $composer;
 
@@ -39,34 +44,42 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public $io;
 
     /**
-     * List of package managers instances.
+     * List of the available package managers/
      * Initialized at activate.
-     * @var array
+     * @var array|PackageManager[]
+     * @see activate
      */
-    protected $managers = ['bower', 'npm'];
+    protected $managers = [
+        'bower' => 'hiqdev\composerassetplugin\Bower',
+        'npm' => 'hiqdev\composerassetplugin\Npm'
+    ];
 
+    /**
+     * @var PackageInterface[] the array of active composer packages
+     */
     protected $packages;
 
     /**
-     * Initializes the plugin object with passed $composer and $io.
+     * Initializes the plugin object with the passed $composer and $io.
      * Also initializes package managers.
      *
      * @param Composer $composer
      * @param IOInterface $io
+     * @void
      */
     public function activate(Composer $composer, IOInterface $io)
     {
+        $managers = [];
         $this->composer = $composer;
         $this->io = $io;
-        foreach ($this->managers as $m) {
-            $class = 'hiqdev\composerassetplugin\\' . ucfirst($m);
-            $managers[$m] = new $class($this);
+        foreach ($this->managers as $name => $class) {
+            $managers[$name] = new $class($this);
         }
         $this->managers = $managers;
     }
 
     /**
-     * Returns list of events the plugin wants to listen.
+     * Returns list of events the plugin is subscribed to
      *
      * @return array list of events
      */
@@ -83,12 +96,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Perform install. Called by composer after install.
+     * Perform install. Called by composer after install
+     *
      * @param Event $event
+     * @void
      */
     public function onPostInstall(Event $event)
     {
-        $lockFile = new JsonFile($this->file);
+        $lockFile = new JsonFile($this->lockFile);
         if ($lockFile->exists()) {
             $this->loadPackages($lockFile);
         } else {
@@ -99,6 +114,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Perform update. Called by composer after update.
+     *
      * @param Event $event
      */
     public function onPostUpdate(Event $event)
@@ -107,11 +123,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->runAction('update');
     }
 
+    /**
+     * Sets [[packages]]
+     *
+     * @param PackageInterface[] $packages
+     */
     public function setPackages(array $packages)
     {
         $this->packages = $packages;
     }
 
+    /**
+     * Gets [[packages]]
+     * @return \Composer\Package\PackageInterface[]
+     */
     public function getPackages()
     {
         if ($this->packages === null) {
@@ -122,22 +147,25 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Scan packages from the composer object.
+     * Scan packages from the composer objects
+     * @void
      */
     protected function scanPackages()
     {
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackage) {
-                foreach ($this->managers as $m) {
-                    $m->scanPackage($package);
+                foreach ($this->managers as $manager) {
+                    $manager->scanPackage($package);
                 }
             }
         }
     }
 
     /**
-     * Load packages from given lock file.
+     * Load packages from given lock file
+     *
      * @param JsonFile $lockFile
+     * @void
      */
     protected function loadPackages(JsonFile $lockFile)
     {
@@ -150,13 +178,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Install packages after loading/scanning.
      * @param string $action
+     * @void
      */
     protected function runAction($action)
     {
+        $dir = getcwd();
         chdir($this->getVendorDir());
         foreach ($this->managers as $m) {
             $m->runAction($action);
         }
+        chdir($dir);
     }
 
     /**

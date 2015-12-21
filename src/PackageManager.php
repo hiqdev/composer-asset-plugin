@@ -18,53 +18,47 @@ use Composer\Package\CompletePackage;
  * Abstract package manager class.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
+ * @package hiqdev\composerassetplugin
  */
 abstract class PackageManager
 {
     /**
-     * The plugin.
-     * @var Plugin
+     * @var Plugin the plugin instance
      */
     protected $plugin;
 
     /**
-     * Package manager name: bower or npm.
-     * @var string
+     * @var string Package manager name: `bower` or `npm`
      */
     protected $name;
 
     /**
-     * Package config file: bower.json or package.json.
-     * @var string
+     * @var string Package config file name: `bower.json` or `package.json`
      */
     public $file;
 
     /**
-     * Path to package manager binary.
-     * @var string
+     * @var string Path to package manager binary
      */
     public $bin;
 
     /**
-     * Package name of PHP version of package manager.
-     * @var string
+     * @var string Package name of the PHP version of the package manager
      */
     public $phpPackage;
 
     /**
-     * Binary name of PHP version of package manager.
-     * @var string
+     * @var string Binary name of PHP version of package manager
      */
     protected $phpBin;
 
     /**
-     * Package config. Initially holds default config.
+     * @var array Package config. Initially holds default config
      */
     protected $config = [];
 
     /**
-     * Conversion table.
-     * @var string
+     * @var array Conversion table
      */
     protected $keyTable = [
         'require'     => 'dependencies',
@@ -73,6 +67,8 @@ abstract class PackageManager
 
     /**
      * Reads config file or dist config if exists, merges with default config.
+     * @param Plugin $plugin
+     * @void
      */
     public function __construct(Plugin $plugin)
     {
@@ -85,9 +81,15 @@ abstract class PackageManager
         );
     }
 
-    public function readConfig($file)
+    /**
+     * Reads the JSON config from the $path and returns extracts dependencies as array
+     *
+     * @param string $path path to the Json file
+     * @return array|mixed
+     */
+    public function readConfig($path)
     {
-        $jsonFile = new JsonFile($file);
+        $jsonFile = new JsonFile($path);
         $config = $jsonFile->exists() ? $jsonFile->read() : [];
         foreach ($this->keyTable as $key) {
             if (!isset($config[$key])) {
@@ -97,17 +99,32 @@ abstract class PackageManager
         return $config;
     }
 
-    public function writeConfig($file, $config)
+    /**
+     * Saves the dependencies described in $config to the config file
+     *
+     * @param string $path
+     * @param array $config
+     * @throws \Exception
+     */
+    public function writeConfig($path, array $config)
     {
         foreach ($this->keyTable as $key) {
             if (isset($config[$key]) && !$config[$key]) {
                 unset($config[$key]);
             }
         }
-        $jsonFile = new JsonFile($file);
+        $jsonFile = new JsonFile($path);
         $jsonFile->write($config);
     }
 
+    /**
+     * Scans the $package and extracts `require` and `require-dev` dependencies to
+     * the [[config]]
+     *
+     * @param CompletePackage $package
+     * @see mergeConfig()
+     * @void
+     */
     public function scanPackage(CompletePackage $package)
     {
         $extra = $package->getExtra();
@@ -118,27 +135,41 @@ abstract class PackageManager
                 $config[$key] = $extra[$name];
             }
         }
-        if ($config) {
+        if (!empty($config)) {
             $this->mergeConfig($config);
         }
     }
 
-    protected function mergeConfig($config)
+    /**
+     * Merges the $config over the [[config]], resolves version conflicts.
+     * @param array $config
+     * @see mergeVersions()
+     * @void
+     */
+    protected function mergeConfig(array $config)
     {
         foreach ($config as $key => $packages) {
-            $key = $this->keyTable[$key];
+            $stability = $this->keyTable[$key];
             foreach ($packages as $name => $version) {
-                $this->config[$key][$name] = isset($this->config[$key][$name])
-                    ? $this->mergeVersions($this->config[$key][$name], $version)
-                    : $version;
+                if (isset($this->config[$stability][$name])) {
+                    $this->config[$stability][$name] = $this->mergeVersions($this->config[$stability][$name], $version);
+                } else {
+                    $this->config[$stability][$name] = $version;
+                }
             }
         }
     }
 
+    /**
+     * @param $a
+     * @param $b
+     * @return string
+     */
     protected function mergeVersions($a, $b)
     {
         $a = trim($a);
         $b = trim($b);
+
         if ($a === $b || $this->isMoreVersion($b, $a)) {
             return $a;
         } elseif ($this->isMoreVersion($a, $b)) {
@@ -151,20 +182,29 @@ abstract class PackageManager
     /**
      * Check if $a is more then $b, like: a="1.1 || 2.2" b="1.1"
      * Possible optimization.
+     * // TODO Rename and implement
+     * @param string $a
+     * @param string $b
+     * @return boolean
      */
     public function isMoreVersion($a, $b)
     {
         return $this->isAnyVersion($a);
-        // WRONG: return strpos($b, $a) !== false;
-    }
-
-    public function isAnyVersion($version)
-    {
-        return !$version || $version === '*' || $version === '>=0.0.0';
     }
 
     /**
-     * Set config.
+     * Checks whether the $version represents any possible version
+     *
+     * @param string $version
+     * @return boolean
+     */
+    public function isAnyVersion($version)
+    {
+        return $version === '' || $version === '*' || $version === '>=0.0.0';
+    }
+
+    /**
+     * Set config
      * @param array $config
      */
     public function setConfig(array $config)
@@ -173,8 +213,9 @@ abstract class PackageManager
     }
 
     /**
-     * Run given action: show notice, write config and run `perform`.
-     * @param string $action
+     * Run the given action: show notice, write config and run `perform`.
+     * @param string $action the action name
+     * @void
      */
     public function runAction($action)
     {
@@ -186,56 +227,54 @@ abstract class PackageManager
 
     /**
      * Run installation. Specific for every package manager.
-     * @param string $action
+     * @param string $action the action name
+     * @void
      */
     protected function perform($action)
     {
-        if ($this->passthru($action)) {
-            $this->plugin->io->write('failed ' . $name . ' ' . $action);
+        if ($this->passthru([$action])) {
+            $this->plugin->io->writeError('failed ' . $this->name . ' ' . $action);
         }
     }
 
     /**
-     * Prepares arguments and runs it with passthru.
-     * @param string $args
-     * @return int exit code
+     * Prepares arguments and runs the command with [[passthru()]].
+     * @param array $arguments
+     * @return integer the exit code
      */
-    public function passthru($args = '')
+    public function passthru(array $arguments = [])
     {
-        passthru($this->getBin() . $this->prepareCommand($args), $exitcode);
-        return $exitcode;
+        passthru($this->getBin() . $this->prepareCommand($arguments), $exitCode);
+        return $exitCode;
     }
 
     /**
-     * Prepares given command arguments.
-     * @param string|array $args
+     * Prepares given command arguments
+     * @param array $arguments
      * @return string
      */
-    public function prepareCommand($args = '')
+    public function prepareCommand(array $arguments = [])
     {
-        if (is_string($args)) {
-            $res = ' ' . trim($args);
-        } else {
-            $res = '';
-            foreach ($args as $a) {
-                $res .= ' ' . escapeshellarg($a);
-            }
+        $result = '';
+        foreach ($arguments as $a) {
+            $result .= ' ' . escapeshellarg($a);
         }
 
-        return $res;
+        return $result;
     }
 
     /**
-     * Set path to binary.
-     * @param string $value
+     * Set path to binary executable file
+     * @param $bin
+     * @internal param string $value
      */
-    public function setBin($value)
+    public function setBin($bin)
     {
-        $this->bin = $value;
+        $this->bin = $bin;
     }
 
     /**
-     * Get path to binary.
+     * Get path to the binary executable file
      * @return string
      */
     public function getBin()
@@ -248,13 +287,13 @@ abstract class PackageManager
     }
 
     /**
-     * Find path binary.
+     * Find path to the binary
      * @return string
      */
     public function detectBin()
     {
         if (isset($this->plugin->getPackages()[$this->phpPackage])) {
-            return $this->plugin->getVendorDir() . '/bin/' . $this->phpBin;
+            return $this->plugin->getVendorDir() . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . $this->phpBin;
         }
 
         return $this->name;
