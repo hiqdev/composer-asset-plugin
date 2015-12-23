@@ -7,9 +7,11 @@ package:
     forum:          http://forum.hiqdev.com/
     keywords:       composer, plugin, assets, bower, npm
     description:    |
-        This Compser plugin installs bower and npm dependencies using
-        native npm and native or PHP bower.
+        This [Composer](https://getcomposer.org/) plugin installs [bower](http://bower.io/)
+        and [npm](https://npmjs.com/) dependencies using native npm and native or
+        [PHP bower](http://bowerphp.org/).
 
 require:
     hiqdev/hidev-vendor: "*@dev"
+    hiqdev/hidev-readme: "*@dev"
     hiqdev/hidev-php:    "*"
