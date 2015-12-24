@@ -30,7 +30,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $this->composer = new Composer();
-        $this->composer->setConfig(new Config());
+        $this->composer->setConfig(new Config(true, getcwd()));
         $this->io = $this->getMock('Composer\IO\IOInterface');
         $this->event = $this->getMock('Composer\Script\Event', [], ['test', $this->composer, $this->io]);
 

@@ -12,6 +12,5 @@ package:
         [PHP bower](http://bowerphp.org/).
 
 require:
-    hiqdev/hidev-vendor: "*@dev"
-    hiqdev/hidev-readme: "*@dev"
     hiqdev/hidev-php:    "*"
+    hiqdev/hidev-vendor: "*"
