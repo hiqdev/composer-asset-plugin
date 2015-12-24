@@ -59,6 +59,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected $packages;
 
     /**
+     * @var string absolute path to vendor directory.
+     */
+    protected $vendorDir;
+
+    /**
      * Initializes the plugin object with the passed $composer and $io.
      * Also initializes package managers.
      *
@@ -195,6 +200,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function getVendorDir()
     {
-        return dirname(__DIR__) . $this->composer->getConfig()->get('vendor-dir');
+        if ($this->vendorDir === null) {
+            $dir = $this->composer->getConfig()->get('vendor-dir');
+            if ($dir[0] !== '/') {
+                $dir = dirname(dirname(__DIR__)) . $dir;
+            }
+            $this->vendorDir = $dir;
+        }
+
+        return $this->vendorDir;
     }
 }
