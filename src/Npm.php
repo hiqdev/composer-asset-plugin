@@ -34,6 +34,16 @@ class Npm extends PackageManager
     public $phpPackage = 'non existent npmphp';
 
     /**
+     * {@inheritdoc}
+     * Not really sure if peer, bundled and optional dependencies are really needed.
+     * Remove them if not.
+     */
+    protected $dependencies = [
+        'dependencies', 'devDependencies',
+        'peerDependencies', 'bundledDependencies', 'optionalDependencies',
+    ];
+
+    /**
      * @var array Minimal bower config
      */
     protected $config = [

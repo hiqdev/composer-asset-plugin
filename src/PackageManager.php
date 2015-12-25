@@ -57,12 +57,9 @@ abstract class PackageManager
     protected $config = [];
 
     /**
-     * @var array Conversion table
+     * @var array List of keys holding dependencies
      */
-    protected $keyTable = [
-        'require'     => 'dependencies',
-        'require-dev' => 'devDependencies',
-    ];
+    protected $dependencies = ['dependencies', 'devDependencies'];
 
     /**
      * Reads config file or dist config if exists, merges with default config.
@@ -81,7 +78,7 @@ abstract class PackageManager
     }
 
     /**
-     * Reads the JSON config from the $path and returns extracts dependencies as array.
+     * Reads the JSON config from the $path.
      *
      * @param string $path path to the Json file
      * @return array|mixed
@@ -90,7 +87,7 @@ abstract class PackageManager
     {
         $jsonFile = new JsonFile($path);
         $config = $jsonFile->exists() ? $jsonFile->read() : [];
-        foreach ($this->keyTable as $key) {
+        foreach ($this->dependencies as $key) {
             if (!isset($config[$key])) {
                 $config[$key] = [];
             }
@@ -99,7 +96,7 @@ abstract class PackageManager
     }
 
     /**
-     * Saves the dependencies described in $config to the config file.
+     * Saves JSON config to the given path.
      *
      * @param string $path
      * @param array $config
@@ -107,7 +104,7 @@ abstract class PackageManager
      */
     public function writeConfig($path, array $config)
     {
-        foreach ($this->keyTable as $key) {
+        foreach ($this->dependencies as $key) {
             if (isset($config[$key]) && !$config[$key]) {
                 unset($config[$key]);
             }
@@ -117,8 +114,7 @@ abstract class PackageManager
     }
 
     /**
-     * Scans the $package and extracts `require` and `require-dev` dependencies to
-     * the [[config]].
+     * Scans the $package and extracts dependencies to the [[config]].
      *
      * @param CompletePackage $package
      * @see mergeConfig()
@@ -128,7 +124,7 @@ abstract class PackageManager
     {
         $extra = $package->getExtra();
         $config = [];
-        foreach (['require', 'require-dev'] as $key) {
+        foreach ($this->dependencies as $key) {
             $name = $this->name . '-' . $key;
             if (isset($extra[$name])) {
                 $config[$key] = $extra[$name];
@@ -140,7 +136,7 @@ abstract class PackageManager
     }
 
     /**
-     * Merges the $config over the [[config]], resolves version conflicts.
+     * Merges the $config over the [[config]], doesn't resolve version conflicts.
      * @param array $config
      * @see mergeVersions()
      * @void
@@ -148,12 +144,11 @@ abstract class PackageManager
     protected function mergeConfig(array $config)
     {
         foreach ($config as $key => $packages) {
-            $stability = $this->keyTable[$key];
             foreach ($packages as $name => $version) {
-                if (isset($this->config[$stability][$name])) {
-                    $this->config[$stability][$name] = $this->mergeVersions($this->config[$stability][$name], $version);
+                if (isset($this->config[$key][$name])) {
+                    $this->config[$key][$name] = $this->mergeVersions($this->config[$key][$name], $version);
                 } else {
-                    $this->config[$stability][$name] = $version;
+                    $this->config[$key][$name] = $version;
                 }
             }
         }

@@ -8,5 +8,10 @@
     "require": {
         "hiqdev/composer-asset-plugin": "@dev",
         "yiisoft/yii2-bootstrap": "*@dev"
+    },
+    "extra": {
+        "bower-dependencies": {
+            "bootstrap": "3.3.3"
+        }
     }
 }
