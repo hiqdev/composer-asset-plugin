@@ -145,6 +145,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->packages === null) {
             $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+            $this->packages[] = $this->composer->getPackage();
         }
 
         return $this->packages;
