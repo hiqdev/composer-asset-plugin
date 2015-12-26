@@ -4,6 +4,9 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - b1e27f2 2015-12-26 optimized to run package manager only if it has dependencies (sol@hiqdev.com)
+    - 84ba146 2015-12-26 fixed lcfirst -> ucfirst (sol@hiqdev.com)
+    - ef8b374 2015-12-26 + styled output (sol@hiqdev.com)
     - a3031ce 2015-12-26 used CompletePackageInterface instead of CompletePackage (sol@hiqdev.com)
     - 44e6362 2015-12-26 small fixed tests/composer.json (sol@hiqdev.com)
     - a327dfd 2015-12-25 + add the root package to the list of packages to scan (sol@hiqdev.com)
