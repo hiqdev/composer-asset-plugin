@@ -12,7 +12,7 @@
 namespace hiqdev\composerassetplugin;
 
 use Composer\Json\JsonFile;
-use Composer\Package\CompletePackage;
+use Composer\Package\CompletePackageInterface;
 
 /**
  * Abstract package manager class.
@@ -116,11 +116,11 @@ abstract class PackageManager
     /**
      * Scans the $package and extracts dependencies to the [[config]].
      *
-     * @param CompletePackage $package
+     * @param CompletePackageInterface $package
      * @see mergeConfig()
      * @void
      */
-    public function scanPackage(CompletePackage $package)
+    public function scanPackage(CompletePackageInterface $package)
     {
         $extra = $package->getExtra();
         $config = [];

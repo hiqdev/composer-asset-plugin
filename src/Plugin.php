@@ -158,7 +158,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected function scanPackages()
     {
         foreach ($this->getPackages() as $package) {
-            if ($package instanceof \Composer\Package\CompletePackage) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 foreach ($this->managers as $manager) {
                     $manager->scanPackage($package);
                 }
