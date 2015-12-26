@@ -207,6 +207,21 @@ abstract class PackageManager
     }
 
     /**
+     * Returns if the package manager has nonempty dependency list.
+     * @return bool
+     */
+    public function hasDependencies()
+    {
+        foreach ($this->dependencies as $key) {
+            if (isset($this->config[$key]) && $this->config[$key]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Run the given action: show notice, write config and run `perform`.
      * @param string $action the action name
      * @void

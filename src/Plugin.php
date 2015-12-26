@@ -190,7 +190,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $dir = getcwd();
         chdir($this->getVendorDir());
         foreach ($this->managers as $m) {
-            $m->runAction($action);
+            if ($m->hasDependencies()) {
+                $m->runAction($action);
+            }
         }
         chdir($dir);
     }
