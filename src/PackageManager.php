@@ -213,7 +213,7 @@ abstract class PackageManager
      */
     public function runAction($action)
     {
-        $doing = lcfirst(trim($action, 'e')) . 'ing';
+        $doing = ucfirst(trim($action, 'e')) . 'ing';
         $this->plugin->io->writeError('<info>' . $doing . ' ' . $this->name . ' dependencies...</info>');
         $this->writeConfig($this->file, $this->config);
         $this->perform($action);
