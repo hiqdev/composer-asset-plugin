@@ -6,12 +6,12 @@
         "url":  "https://github.com/hiqsol/yii2-bootstrap"
     }],
     "require": {
-        "hiqdev/composer-asset-plugin": "@dev",
+        "hiqdev/composer-asset-plugin": "*@dev",
         "yiisoft/yii2-bootstrap": "*@dev"
     },
     "extra": {
         "bower-dependencies": {
-            "bootstrap": "3.3.3"
+            "bootstrap": "3.3.4"
         }
     }
 }
