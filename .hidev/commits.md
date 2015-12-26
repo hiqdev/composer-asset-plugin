@@ -4,6 +4,10 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - a3031ce 2015-12-26 used CompletePackageInterface instead of CompletePackage (sol@hiqdev.com)
+    - 44e6362 2015-12-26 small fixed tests/composer.json (sol@hiqdev.com)
+    - a327dfd 2015-12-25 + add the root package to the list of packages to scan (sol@hiqdev.com)
+    - 5a339db 2015-12-25 changed require/-dev to native dev/dependencies (sol@hiqdev.com)
     - c06d3bf 2015-12-24 fixed build (sol@hiqdev.com)
     - a8843bf 2015-12-24 fixed getVendorDir (sol@hiqdev.com)
     - ad488f3 2015-12-21 tidied up code (d.naumenko.a@gmail.com)
