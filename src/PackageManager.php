@@ -213,8 +213,8 @@ abstract class PackageManager
      */
     public function runAction($action)
     {
-        $doing = trim($action, 'e') . 'ing';
-        $this->plugin->io->write($doing . ' ' . $this->name . ' dependencies...');
+        $doing = lcfirst(trim($action, 'e')) . 'ing';
+        $this->plugin->io->writeError('<info>' . $doing . ' ' . $this->name . ' dependencies...</info>');
         $this->writeConfig($this->file, $this->config);
         $this->perform($action);
     }
@@ -227,7 +227,7 @@ abstract class PackageManager
     protected function perform($action)
     {
         if ($this->passthru([$action])) {
-            $this->plugin->io->writeError('failed ' . $this->name . ' ' . $action);
+            $this->plugin->io->writeError('<error>failed ' . $this->name . ' ' . $action . '</error>');
         }
     }
 
