@@ -4,6 +4,7 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added basics
+    - 5e75428 2015-12-28 fixed detectBin to use bowerphp required by this package (sol@hiqdev.com)
     - b1e27f2 2015-12-26 optimized to run package manager only if it has dependencies (sol@hiqdev.com)
     - 84ba146 2015-12-26 fixed lcfirst -> ucfirst (sol@hiqdev.com)
     - ef8b374 2015-12-26 + styled output (sol@hiqdev.com)
