@@ -152,6 +152,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
+     * Returns package with given name if exists.
+     * @param string $name package name
+     * @return \Composer\Package\PackageInterface|null
+     */
+    public function findPackage($name)
+    {
+        foreach ($this->getPackages() as $package) {
+            if ($name === $package->getName()) {
+                return $package;
+            }
+        }
+    }
+
+    /**
      * Scan packages from the composer objects.
      * @void
      */

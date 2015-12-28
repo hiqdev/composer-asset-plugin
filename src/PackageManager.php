@@ -241,6 +241,7 @@ abstract class PackageManager
      */
     protected function perform($action)
     {
+        $this->plugin->io->writeError('running ' . $this->getBin());
         if ($this->passthru([$action])) {
             $this->plugin->io->writeError('<error>failed ' . $this->name . ' ' . $action . '</error>');
         }
@@ -301,7 +302,7 @@ abstract class PackageManager
      */
     public function detectBin()
     {
-        if (isset($this->plugin->getPackages()[$this->phpPackage])) {
+        if ($this->plugin->findPackage($this->phpPackage)) {
             return $this->plugin->getVendorDir() . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . $this->phpBin;
         }
 
