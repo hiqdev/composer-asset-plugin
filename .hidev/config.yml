@@ -6,6 +6,7 @@ package:
     title:          Composer plugin for bower/npm assets
     forum:          http://forum.hiqdev.com/
     keywords:       composer, plugin, assets, bower, npm
+    year:           2015
     description:    |
         This [Composer](https://getcomposer.org/) plugin installs [bower](http://bower.io/)
         and [npm](https://npmjs.com/) dependencies using native npm and native or
