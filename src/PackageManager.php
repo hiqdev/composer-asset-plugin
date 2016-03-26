@@ -143,14 +143,19 @@ abstract class PackageManager
      */
     protected function mergeConfig(array $config)
     {
-        foreach ($config as $key => $packages) {
+        foreach ($config as $type => $packages) {
             foreach ($packages as $name => $version) {
-                if (isset($this->config[$key][$name])) {
-                    $this->config[$key][$name] = $this->mergeVersions($this->config[$key][$name], $version);
-                } else {
-                    $this->config[$key][$name] = $version;
-                }
+                $this->addDependency($type, $name, $version);
             }
+        }
+    }
+
+    public function addDependency($type, $name, $version)
+    {
+        if (isset($this->config[$type][$name])) {
+            $this->config[$type][$name] = $this->mergeVersions($this->config[$type][$name], $version);
+        } else {
+            $this->config[$type][$name] = $version;
         }
     }
 
