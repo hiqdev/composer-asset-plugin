@@ -3,6 +3,8 @@ hiqdev/composer-asset-plugin commits history
 
 ## Under development
 
+    - 0b917ba 2016-03-26 + Constraint class with tests (sol@hiqdev.com)
+    - 0d6cc4b 2016-03-26 + `PackageManager::addDependency` (sol@hiqdev.com)
 - Added basics
     - d054b9e 2016-01-06 fixed getting vendor dir (sol@hiqdev.com)
     - 5e75428 2015-12-28 fixed detectBin to use bowerphp required by this package (sol@hiqdev.com)

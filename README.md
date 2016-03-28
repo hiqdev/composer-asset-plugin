@@ -6,8 +6,8 @@ Composer Asset Plugin
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/composer-asset-plugin/v/stable)](https://packagist.org/packages/hiqdev/composer-asset-plugin)
 [![Total Downloads](https://poser.pugx.org/hiqdev/composer-asset-plugin/downloads)](https://packagist.org/packages/hiqdev/composer-asset-plugin)
 [![Build Status](https://img.shields.io/travis/hiqdev/composer-asset-plugin.svg)](https://travis-ci.org/hiqdev/composer-asset-plugin)
-[![Code Coverage](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/?branch=master)
+[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/hiqdev/composer-asset-plugin.svg)](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/hiqdev/composer-asset-plugin.svg)](https://scrutinizer-ci.com/g/hiqdev/composer-asset-plugin/)
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:composer-asset-plugin/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:composer-asset-plugin/dev-master)
 
 This [Composer](https://getcomposer.org/) plugin installs [bower](http://bower.io/)
