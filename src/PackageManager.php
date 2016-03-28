@@ -149,7 +149,7 @@ abstract class PackageManager
                 unset($config[$key]);
                 continue;
             }
-            foreach ($config['key'] as $name => &$constraint) {
+            foreach ($config[$key] as $name => &$constraint) {
                 $constraint = $this->fixConstraint($constraint);
             }
         }
