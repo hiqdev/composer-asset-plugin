@@ -44,7 +44,7 @@ class Npm extends PackageManager
     ];
 
     /**
-     * @var array Minimal bower config
+     * @var array Minimal NPM config
      */
     protected $config = [
         'name'        => 'composer-asset-plugin',
