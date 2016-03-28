@@ -13,9 +13,13 @@ namespace hiqdev\composerassetplugin;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Installer\InstallerEvent;
+use Composer\Installer\InstallerEvents;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
 use Composer\Package\PackageInterface;
+use Composer\Plugin\CommandEvent;
+use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -43,6 +47,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public $io;
 
     /**
+     * @var Pool
+     */
+    protected $pool;
+
+    /**
      * List of the available package managers/
      * Initialized at activate.
      * @var array|PackageManager[]
@@ -50,7 +59,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $managers = [
         'bower' => 'hiqdev\composerassetplugin\Bower',
-        'npm' => 'hiqdev\composerassetplugin\Npm',
+        'npm'   => 'hiqdev\composerassetplugin\Npm',
     ];
 
     /**
@@ -62,6 +71,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @var string absolute path to vendor directory.
      */
     protected $vendorDir;
+
+    /**
+     *
+     */
+    protected $requires = [];
 
     /**
      * Initializes the plugin object with the passed $composer and $io.
@@ -80,6 +94,26 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $managers[$name] = new $class($this);
         }
         $this->managers = $managers;
+
+        #$rm = $composer->getRepositoryManager();
+
+        #$rm->setRepositoryClass('assets', 'hiqdev\composerassetplugin\AssetRepository');
+        #$rm->addRepository($rm->createRepository('assets', ['plugin' => $this]));
+    }
+
+    public function getComposer()
+    {
+        return $this->composer;
+    }
+
+    public function hasManager($name)
+    {
+        return isset($this->managers[$name]);
+    }
+
+    public function getManager($name)
+    {
+        return $this->managers[$name];
     }
 
     /**
@@ -90,6 +124,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            InstallerEvents::PRE_DEPENDENCIES_SOLVING => array(
+                array('onPreDependenciesSolving', 0),
+            ),
+            PluginEvents::COMMAND => array(
+                ['onCommand', 0],
+            ),
             ScriptEvents::POST_INSTALL_CMD => [
                 ['onPostInstall', 0],
             ],
@@ -97,6 +137,64 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 ['onPostUpdate', 0],
             ],
         ];
+    }
+
+    /**
+     * @param InstallerEvent $event
+     */
+    public function onPreDependenciesSolving(InstallerEvent $event)
+    {
+        $pool = $event->getPool();
+        for ($i=1; $i<= $pool->count(); $i++) {
+            $package = $pool->packageById($i);
+            $this->removeAssetDependencies($package);
+        }
+    }
+
+    public function removeAssetDependencies(PackageInterface $package)
+    {
+        static $deptypes = [
+            'dependencies'      => 'getRequires',
+            'devDependencies'   => 'getDevRequires',
+        ];
+        $res = [];
+        foreach ($deptypes as $deptype => $method) {
+            $requires = $package->$method();
+            foreach ($requires as $reqkey => $require) {
+                $target = $require->getTarget();
+                if (strpos($target, '/') === false) {
+                    continue;
+                }
+                list($vendor, $name) = explode('/', $target);
+                if (substr($vendor, -6) !== '-asset') {
+                    continue;
+                }
+                list($manager, $asset) = explode('-', $vendor);
+                if ($this->hasManager($manager)) {
+                    $this->getManager($manager)->setKnownDeps($package, $deptype, $name, $require->getPrettyConstraint());
+                    unset($requires[$reqkey]);
+                    $method[0] = 's';
+                    if (method_exists($package, $method)) {
+                        $package->{$method}($requires);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param CommandEvent $event
+     */
+    public function onCommand(CommandEvent $event)
+    {
+        var_dump('onCommand');
+        return;
+        $repositories = $this->composer->getRepositoryManager()->getRepositories();
+        foreach ($repositories as $repository) {
+            var_dump($repository->getProviderNames());
+            foreach ($repository->getPackages() as $package) {
+            }
+        }
     }
 
     /**

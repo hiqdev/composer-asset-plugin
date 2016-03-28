@@ -12,7 +12,7 @@
 namespace hiqdev\composerassetplugin;
 
 use Composer\Json\JsonFile;
-use Composer\Package\CompletePackageInterface;
+use Composer\Package\PackageInterface;
 
 /**
  * Abstract package manager class.
@@ -62,6 +62,11 @@ abstract class PackageManager
     protected $dependencies = ['dependencies', 'devDependencies'];
 
     /**
+     * array known deps collected from requirements
+     */
+    protected $knownDeps = [];
+
+    /**
      * Reads config file or dist config if exists, merges with default config.
      * @param Plugin $plugin
      * @void
@@ -75,6 +80,32 @@ abstract class PackageManager
             $this->readConfig($this->file)
             //$this->readConfig(file_exists($dist) ? $dist : $this->file)
         );
+    }
+
+    public function packageFullName($package)
+    {
+        return $package->getName() . ':' . $package->getVersion();
+    }
+
+    public function setKnownDeps(PackageInterface $package, $type, $name, $constraint)
+    {
+        $res = $this->getKnownDeps($package);
+        if (!isset($res[$type])) {
+            $res[$type] = [];
+        }
+        $res[$type][$name] = $constraint;
+        $this->knownDeps[$this->packageFullName($package)] = $res;
+    }
+
+    public function getKnownDeps(PackageInterface $package)
+    {
+        $full = $this->packageFullName($package);
+        return isset($this->knownDeps[$full]) ? $this->knownDeps[$full] : [];
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
@@ -104,102 +135,81 @@ abstract class PackageManager
      */
     public function writeConfig($path, array $config)
     {
+        $jsonFile = new JsonFile($path);
+        $jsonFile->write($this->prepareConfig($config));
+    }
+
+    public function prepareConfig(array $config)
+    {
         foreach ($this->dependencies as $key) {
-            if (isset($config[$key]) && !$config[$key]) {
+            if (!isset($config[$key])) {
+                continue;
+            }
+            if (!$config[$key]) {
                 unset($config[$key]);
+                continue;
+            }
+            foreach ($config['key'] as $name => &$constraint) {
+                $constraint = $this->fixConstraint($constraint);
             }
         }
-        $jsonFile = new JsonFile($path);
-        $jsonFile->write($config);
+
+        return $config;
+    }
+
+    /**
+     * Fixes constraint for the package manager.
+     * Does nothing for NPM. Redefined in Bower.
+     * @param string $constraint
+     * @return string
+     */
+    public function fixConstraint($constraint)
+    {
+        return $constraint;
     }
 
     /**
      * Scans the $package and extracts dependencies to the [[config]].
-     *
-     * @param CompletePackageInterface $package
-     * @see mergeConfig()
-     * @void
+     * @param PackageInterface $package
      */
-    public function scanPackage(CompletePackageInterface $package)
+    public function scanPackage(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        $config = [];
+        $extra_deps = [];
         foreach ($this->dependencies as $key) {
             $name = $this->name . '-' . $key;
             if (isset($extra[$name])) {
-                $config[$key] = $extra[$name];
+                $extra_deps[$key] = $extra[$name];
             }
         }
-        if (!empty($config)) {
-            $this->mergeConfig($config);
+        $known_deps = $this->getKnownDeps($package);
+        foreach ([$known_deps, $extra_deps] as $deps) {
+            if (!empty($deps)) {
+                $this->mergeConfig($deps);
+            }
         }
     }
 
     /**
-     * Merges the $config over the [[config]], doesn't resolve version conflicts.
+     * Merges the $config over the [[config]].
      * @param array $config
-     * @see mergeVersions()
-     * @void
      */
     protected function mergeConfig(array $config)
     {
         foreach ($config as $type => $packages) {
-            foreach ($packages as $name => $version) {
-                $this->addDependency($type, $name, $version);
+            foreach ($packages as $name => $constraint) {
+                $this->addDependency($type, $name, $constraint);
             }
         }
     }
 
-    public function addDependency($type, $name, $version)
+    public function addDependency($type, $name, $constraint)
     {
         if (isset($this->config[$type][$name])) {
-            $this->config[$type][$name] = $this->mergeVersions($this->config[$type][$name], $version);
+            $this->config[$type][$name] = Constraint::merge($this->config[$type][$name], $constraint);
         } else {
-            $this->config[$type][$name] = $version;
+            $this->config[$type][$name] = $constraint;
         }
-    }
-
-    /**
-     * @param $a
-     * @param $b
-     * @return string
-     */
-    protected function mergeVersions($a, $b)
-    {
-        $a = trim($a);
-        $b = trim($b);
-
-        if ($a === $b || $this->isMoreVersion($b, $a)) {
-            return $a;
-        } elseif ($this->isMoreVersion($a, $b)) {
-            return $b;
-        } else {
-            return $a . ' ' . $b;
-        }
-    }
-
-    /**
-     * Check if $a is more then $b, like: a="1.1 || 2.2" b="1.1"
-     * Possible optimization.
-     * // TODO Rename and implement.
-     * @param string $a
-     * @param string $b
-     * @return boolean
-     */
-    public function isMoreVersion($a, $b)
-    {
-        return $this->isAnyVersion($a);
-    }
-
-    /**
-     * Checks whether the $version represents any possible version.
-     *
-     * @param string $version
-     * @return boolean
-     */
-    public function isAnyVersion($version)
-    {
-        return $version === '' || $version === '*' || $version === '>=0.0.0';
     }
 
     /**
@@ -229,7 +239,6 @@ abstract class PackageManager
     /**
      * Run the given action: show notice, write config and run `perform`.
      * @param string $action the action name
-     * @void
      */
     public function runAction($action)
     {
