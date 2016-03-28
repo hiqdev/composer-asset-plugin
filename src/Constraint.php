@@ -11,6 +11,10 @@
 
 namespace hiqdev\composerassetplugin;
 
+use Composer\Semver\Comparator;
+use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\VersionParser;
+
 /**
  * Constraint helper class.
  *
@@ -18,61 +22,43 @@ namespace hiqdev\composerassetplugin;
  */
 class Constraint
 {
+    static private $parser;
+
+    static public function getParser()
+    {
+        if (static::$parser === null) {
+            static::$parser = new VersionParser();
+        }
+
+        return static::$parser;
+    }
+
+    static public function parse($constraint)
+    {
+        return static::getParser()->parseConstraints($constraint);
+    }
+
     /**
      * Merges two constraints.
      * Doesn't resolve version conflicts.
-     * @param $a
-     * @param $b
+     * @param string $a
+     * @param string $b
      * @return string
      */
     static public function merge($a, $b)
     {
-        $a = trim($a);
-        $b = trim($b);
-        var_dump("a:$a b:$b");
+        $acon = static::parse($a);
+        $bcon = static::parse($b);
 
-        if ($a === $b || static::isWeaker($b, $a)) {
-            return $a;
-        } elseif (static::isWeaker($a, $b)) {
+        if ($acon instanceof EmptyConstraint) {
             return $b;
+        } elseif ($bcon instanceof EmptyConstraint) {
+            return $a;
+        } elseif ($acon->matches($bcon) || $bcon->matches($acon)) {
+            return strlen($a)>strlen($b) ? $b : $a;
         } else {
             return $a . ' ' . $b;
         }
-    }
-
-    /**
-     * Check if $a is weaker condition then $b, like:
-     * - a="*"         b="2.2"
-     * - a="2.2 | 3.3" b="2.2"
-     * - a="1.1 | 2.2" b="2.2"
-     * Possible optimization.
-     * // TODO Rename and implement.
-     * @param string $a
-     * @param string $b
-     * @return boolean
-     */
-    static public function isWeaker($a, $b)
-    {
-        return static::isEmpty($a) || static::startsWith($a, $b . ' |') | static::endsWith($a, '| ' . $b);
-    }
-
-    static public function startsWith($haystack, $needle) {
-        return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== false;
-    }
-
-    static public function endsWith($haystack, $needle) {
-        return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
-    }
-
-    /**
-     * Checks whether the $version represents any possible version.
-     *
-     * @param string $version
-     * @return boolean
-     */
-    static public function isEmpty($version)
-    {
-        return $version === '' || $version === '*' || $version === '>=0.0.0';
     }
 
     static public function findMax(array $versions)
@@ -82,28 +68,25 @@ class Constraint
             return reset($versions);
         }
         $max = $versions[0];
-        $maxNum = static::toNum($max);
         for ($i=1; $i<= count($versions); $i++) {
             $cur = $versions[$i];
-            $curNum = static::toNum($cur);
-            if ($curNum > $maxNum) {
+            if (Comparator::compare($cur, '>', $max)) {
                 $max = $cur;
-                $maxNum = $curNum;
             }
         }
 
-        return $max;
+        return trim($max);
     }
 
-    static public function toNum($version)
+    /**
+     * Is constraint disjunctive.
+     * TODO redo after Semver will have such function.
+     * @param string $constraint
+     * @return bool
+     */
+    static public function isDisjunctive($constraint)
     {
-        $version = preg_replace('/[^0-9\.]/', '', $version);
-        $nums = explode('.', $version);
-        $n1 = isset($nums[0]) ? $nums[0] : 0;
-        $n2 = isset($nums[1]) ? $nums[1] : 0;
-        $n3 = isset($nums[2]) ? $nums[2] : 0;
-
-        return (($n1*1000) + $n2)*1000 + $n3;
+        return strpos($constraint, '|') !== false;
     }
 
 }
