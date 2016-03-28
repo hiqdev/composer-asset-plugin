@@ -45,4 +45,13 @@ class Bower extends PackageManager
         'name'        => 'composer-asset-plugin',
         'description' => "This file is auto-generated with 'hiqdev/composer-asset-plugin'.",
     ];
+
+    public function fixConstraint($constraint)
+    {
+        if (Constraint::isDisjunctive($constraint)) {
+            $constraint = Constraint::findMax(explode($constraint, '|'));
+        }
+
+        return $constraint;
+    }
 }
