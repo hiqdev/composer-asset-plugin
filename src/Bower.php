@@ -59,7 +59,8 @@ class Bower extends PackageManager
         $this->rc['directory'] = $dir;
     }
 
-    public function writeRc($path, $data) {
+    public function writeRc($path, $data)
+    {
         $this->writeJson($path, $data);
     }
 

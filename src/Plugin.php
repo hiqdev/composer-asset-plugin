@@ -145,7 +145,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function onPreDependenciesSolving(InstallerEvent $event)
     {
         $pool = $event->getPool();
-        for ($i=1; $i<= $pool->count(); $i++) {
+        for ($i = 1; $i <= $pool->count(); ++$i) {
             $package = $pool->packageById($i);
             $this->scanAssetDependencies($package);
         }

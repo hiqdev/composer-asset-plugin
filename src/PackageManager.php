@@ -72,7 +72,7 @@ abstract class PackageManager
     protected $dependencies = ['dependencies', 'devDependencies'];
 
     /**
-     * array known deps collected from requirements
+     * array known deps collected from requirements.
      */
     protected $knownDeps = [];
 

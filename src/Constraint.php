@@ -22,9 +22,9 @@ use Composer\Semver\VersionParser;
  */
 class Constraint
 {
-    static private $parser;
+    private static $parser;
 
-    static public function getParser()
+    public static function getParser()
     {
         if (static::$parser === null) {
             static::$parser = new VersionParser();
@@ -33,7 +33,7 @@ class Constraint
         return static::$parser;
     }
 
-    static public function parse($constraint)
+    public static function parse($constraint)
     {
         return static::getParser()->parseConstraints($constraint);
     }
@@ -45,7 +45,7 @@ class Constraint
      * @param string $b
      * @return string
      */
-    static public function merge($a, $b)
+    public static function merge($a, $b)
     {
         $acon = static::parse($a);
         $bcon = static::parse($b);
@@ -55,20 +55,20 @@ class Constraint
         } elseif ($bcon instanceof EmptyConstraint) {
             return $a;
         } elseif ($acon->matches($bcon) || $bcon->matches($acon)) {
-            return strlen($a)>strlen($b) ? $b : $a;
+            return strlen($a) > strlen($b) ? $b : $a;
         } else {
             return $a . ' ' . $b;
         }
     }
 
-    static public function findMax(array $versions)
+    public static function findMax(array $versions)
     {
         $versions = array_values(array_unique($versions));
-        if (count($versions)<2) {
+        if (count($versions) < 2) {
             return reset($versions);
         }
         $max = $versions[0];
-        for ($i=1; $i<count($versions); $i++) {
+        for ($i = 1; $i < count($versions); ++$i) {
             $cur = $versions[$i];
             if (Comparator::compare($cur, '>', $max)) {
                 $max = $cur;
@@ -84,9 +84,8 @@ class Constraint
      * @param string $constraint
      * @return bool
      */
-    static public function isDisjunctive($constraint)
+    public static function isDisjunctive($constraint)
     {
         return strpos($constraint, '|') !== false;
     }
-
 }

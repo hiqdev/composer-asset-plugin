@@ -68,12 +68,12 @@ class Npm extends PackageManager
         $this->rc['prefix'] = $dir;
     }
 
-    public function writeRc($path, $data) {
+    public function writeRc($path, $data)
+    {
         $str = '';
         foreach ($data as $key => $value) {
             $str .= "$key = $value\n";
         }
         file_put_contents($path, $str);
     }
-
 }
