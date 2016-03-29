@@ -20,13 +20,13 @@ In your `composer.json`:
 
 ```json
 "extra": {
-    "bower-require": {
+    "bower-dependencies": {
         "jquery": "*"
     },
-    "bower-require-dev": {
+    "bower-devDependencies": {
         "qunit": "*"
     },
-    "npm-require": {
+    "npm-dependencies": {
         "grunt": "0.4.*"
     }
 }
