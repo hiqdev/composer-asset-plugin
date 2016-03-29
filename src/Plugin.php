@@ -13,13 +13,9 @@ namespace hiqdev\composerassetplugin;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
-use Composer\Installer\InstallerEvent;
-use Composer\Installer\InstallerEvents;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
 use Composer\Package\PackageInterface;
-use Composer\Plugin\CommandEvent;
-use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -124,12 +120,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-#           InstallerEvents::PRE_DEPENDENCIES_SOLVING => array(
-#               array('onPreDependenciesSolving', 0),
-#           ),
-#           PluginEvents::COMMAND => array(
-#               ['onCommand', 0],
-#           ),
             ScriptEvents::POST_INSTALL_CMD => [
                 ['onPostInstall', 0],
             ],
@@ -137,18 +127,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 ['onPostUpdate', 0],
             ],
         ];
-    }
-
-    /**
-     * @param InstallerEvent $event
-     */
-    public function onPreDependenciesSolving(InstallerEvent $event)
-    {
-        $pool = $event->getPool();
-        for ($i = 1; $i <= $pool->count(); ++$i) {
-            $package = $pool->packageById($i);
-            $this->scanAssetDependencies($package);
-        }
     }
 
     public function scanAssetDependencies(PackageInterface $package)
@@ -170,10 +148,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     continue;
                 }
                 list($manager, $asset) = explode('-', $vendor);
-                #var_dump($target . ' ' . $require->getPrettyConstraint());
                 if ($this->hasManager($manager)) {
                     $this->getManager($manager)->setKnownDeps($package, $deptype, $name, $require->getPrettyConstraint());
-                    /*
+                    /* removing asset dependencies
                     unset($requires[$reqkey]);
                     $method[0] = 's';
                     if (method_exists($package, $method)) {
@@ -181,19 +158,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     }
                     */
                 }
-            }
-        }
-    }
-
-    /**
-     * @param CommandEvent $event
-     */
-    public function onCommand(CommandEvent $event)
-    {
-        return;
-        $repositories = $this->composer->getRepositoryManager()->getRepositories();
-        foreach ($repositories as $repository) {
-            foreach ($repository->getPackages() as $package) {
             }
         }
     }
