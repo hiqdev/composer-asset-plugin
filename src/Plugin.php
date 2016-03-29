@@ -124,12 +124,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            InstallerEvents::PRE_DEPENDENCIES_SOLVING => array(
-                array('onPreDependenciesSolving', 0),
-            ),
-            PluginEvents::COMMAND => array(
-                ['onCommand', 0],
-            ),
+#           InstallerEvents::PRE_DEPENDENCIES_SOLVING => array(
+#               array('onPreDependenciesSolving', 0),
+#           ),
+#           PluginEvents::COMMAND => array(
+#               ['onCommand', 0],
+#           ),
             ScriptEvents::POST_INSTALL_CMD => [
                 ['onPostInstall', 0],
             ],
@@ -147,11 +147,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $pool = $event->getPool();
         for ($i=1; $i<= $pool->count(); $i++) {
             $package = $pool->packageById($i);
-            $this->removeAssetDependencies($package);
+            $this->scanAssetDependencies($package);
         }
     }
 
-    public function removeAssetDependencies(PackageInterface $package)
+    public function scanAssetDependencies(PackageInterface $package)
     {
         static $deptypes = [
             'dependencies'      => 'getRequires',
@@ -172,11 +172,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 list($manager, $asset) = explode('-', $vendor);
                 if ($this->hasManager($manager)) {
                     $this->getManager($manager)->setKnownDeps($package, $deptype, $name, $require->getPrettyConstraint());
+                    /*
                     unset($requires[$reqkey]);
                     $method[0] = 's';
                     if (method_exists($package, $method)) {
                         $package->{$method}($requires);
                     }
+                    */
                 }
             }
         }
@@ -187,11 +189,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onCommand(CommandEvent $event)
     {
-        var_dump('onCommand');
         return;
         $repositories = $this->composer->getRepositoryManager()->getRepositories();
         foreach ($repositories as $repository) {
-            var_dump($repository->getProviderNames());
             foreach ($repository->getPackages() as $package) {
             }
         }
@@ -269,6 +269,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function scanPackages()
     {
+        foreach ($this->getPackages() as $package) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface) {
+                $this->scanAssetDependencies($package);
+            }
+        }
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 foreach ($this->managers as $manager) {
