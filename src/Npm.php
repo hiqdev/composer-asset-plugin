@@ -31,7 +31,14 @@ class Npm extends PackageManager
     /**
      * {@inheritdoc}
      */
+    public $rcfile = '.npmrc';
+
+    /**
+     * {@inheritdoc}
+     */
     public $phpPackage = 'non existent npmphp';
+
+    public $args = [];
 
     /**
      * {@inheritdoc}
@@ -52,4 +59,21 @@ class Npm extends PackageManager
         'readme'      => ' ',
         'repository'  => ['type' => 'git'],
     ];
+
+    public function setDestination($dir)
+    {
+        if (substr($dir, 0, 7) === 'vendor/') {
+            $dir = substr($dir, 7);
+        }
+        $this->rc['prefix'] = $dir;
+    }
+
+    public function writeRc($path, $data) {
+        $str = '';
+        foreach ($data as $key => $value) {
+            $str .= "$key = $value\n";
+        }
+        file_put_contents($path, $str);
+    }
+
 }

@@ -63,12 +63,12 @@ class Constraint
 
     static public function findMax(array $versions)
     {
-        $versions = array_unique(array_values($versions));
+        $versions = array_values(array_unique($versions));
         if (count($versions)<2) {
             return reset($versions);
         }
         $max = $versions[0];
-        for ($i=1; $i<= count($versions); $i++) {
+        for ($i=1; $i<count($versions); $i++) {
             $cur = $versions[$i];
             if (Comparator::compare($cur, '>', $max)) {
                 $max = $cur;

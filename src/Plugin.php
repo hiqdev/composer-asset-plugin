@@ -160,6 +160,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $res = [];
         foreach ($deptypes as $deptype => $method) {
             $requires = $package->$method();
+
             foreach ($requires as $reqkey => $require) {
                 $target = $require->getTarget();
                 if (strpos($target, '/') === false) {
@@ -170,6 +171,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     continue;
                 }
                 list($manager, $asset) = explode('-', $vendor);
+                #var_dump($target . ' ' . $require->getPrettyConstraint());
                 if ($this->hasManager($manager)) {
                     $this->getManager($manager)->setKnownDeps($package, $deptype, $name, $require->getPrettyConstraint());
                     /*
@@ -269,6 +271,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function scanPackages()
     {
+        $extra = $this->composer->getPackage()->getExtra();
+        foreach ($this->managers as $manager) {
+            $var = $manager->getName() . '-asset-library';
+            if (isset($extra['asset-installer-paths'][$var])) {
+                $manager->setDestination($extra['asset-installer-paths'][$var]);
+            }
+        }
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 $this->scanAssetDependencies($package);

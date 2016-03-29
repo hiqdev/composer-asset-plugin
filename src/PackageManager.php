@@ -37,6 +37,11 @@ abstract class PackageManager
     public $file;
 
     /**
+     * @var string Package RC config file name: `.bowerrc` or `.npmrc`
+     */
+    public $rcfile;
+
+    /**
      * @var string Path to package manager binary
      */
     public $bin;
@@ -55,6 +60,11 @@ abstract class PackageManager
      * @var array Package config. Initially holds default config
      */
     protected $config = [];
+
+    /**
+     * @var array RC config: .bowerrc or .npmrc
+     */
+    protected $rc = [];
 
     /**
      * @var array List of keys holding dependencies
@@ -80,6 +90,11 @@ abstract class PackageManager
             $this->readConfig($this->file)
             //$this->readConfig(file_exists($dist) ? $dist : $this->file)
         );
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 
     public function packageFullName($package)
@@ -108,6 +123,7 @@ abstract class PackageManager
         return $this->config;
     }
 
+    abstract public function setDestination($dir);
     /**
      * Reads the JSON config from the $path.
      *
@@ -133,7 +149,7 @@ abstract class PackageManager
      * @param array $config
      * @throws \Exception
      */
-    public function writeConfig($path, array $config)
+    public function writeJson($path, array $config)
     {
         $jsonFile = new JsonFile($path);
         $jsonFile->write($this->prepareConfig($config));
@@ -244,9 +260,21 @@ abstract class PackageManager
     {
         $doing = ucfirst(trim($action, 'e')) . 'ing';
         $this->plugin->io->writeError('<info>' . $doing . ' ' . $this->name . ' dependencies...</info>');
-        $this->writeConfig($this->file, $this->config);
+        $this->saveConfigs();
         $this->perform($action);
     }
+
+    public function saveConfigs()
+    {
+        if ($this->rc) {
+            $this->writeRc($this->rcfile, $this->rc);
+        } else {
+            unlink($this->rcfile);
+        }
+        $this->writeJson($this->file, $this->config);
+    }
+
+    abstract public function writeRc($path, $data);
 
     /**
      * Run installation. Specific for every package manager.

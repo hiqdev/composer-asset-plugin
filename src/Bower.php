@@ -31,6 +31,11 @@ class Bower extends PackageManager
     /**
      * {@inheritdoc}
      */
+    public $rcfile = '.bowerrc';
+
+    /**
+     * {@inheritdoc}
+     */
     public $phpPackage = 'beelab/bowerphp';
 
     /**
@@ -46,10 +51,27 @@ class Bower extends PackageManager
         'description' => "This file is auto-generated with 'hiqdev/composer-asset-plugin'.",
     ];
 
+    public function setDestination($dir)
+    {
+        if (substr($dir, 0, 7) === 'vendor/') {
+            $dir = substr($dir, 7);
+        }
+        $this->rc['directory'] = $dir;
+    }
+
+    public function writeRc($path, $data) {
+        $this->writeJson($path, $data);
+    }
+
     public function fixConstraint($constraint)
     {
         if (Constraint::isDisjunctive($constraint)) {
-            $constraint = Constraint::findMax(explode($constraint, '|'));
+            $constraint = Constraint::findMax(explode('|', $constraint));
+        }
+
+        $pos = strpos($constraint, '@');
+        if ($pos !== false) {
+            $constraint = substr($constraint, 0, $pos);
         }
 
         return $constraint;
