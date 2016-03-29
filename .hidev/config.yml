@@ -1,15 +1,13 @@
 package:
     type:           composer-plugin
     name:           composer-asset-plugin
-    namespace:      hiqdev\composerassetplugin
-    headline:       Composer Asset Plugin
     title:          Composer plugin for bower/npm assets
-    forum:          http://forum.hiqdev.com/
+    headline:       Composer Asset Plugin
     keywords:       composer, plugin, assets, bower, npm
-    year:           2015
+    namespace:      hiqdev\composerassetplugin
     description:    |
         This [Composer](https://getcomposer.org/) plugin installs [bower](http://bower.io/)
-        and [npm](https://npmjs.com/) dependencies using native npm and native or
+        and [npm](https://npmjs.com/) dependencies using native npm and native bower or
         [PHP bower](http://bowerphp.org/).
 
 require:

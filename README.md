@@ -11,7 +11,7 @@ Composer Asset Plugin
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:composer-asset-plugin/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:composer-asset-plugin/dev-master)
 
 This [Composer](https://getcomposer.org/) plugin installs [bower](http://bower.io/)
-and [npm](https://npmjs.com/) dependencies using native npm and native or
+and [npm](https://npmjs.com/) dependencies using native npm and native bower or
 [PHP bower](http://bowerphp.org/).
 
 ## Basic Usage

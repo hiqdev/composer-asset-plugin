@@ -3,6 +3,19 @@ hiqdev/composer-asset-plugin commits history
 
 ## Under development
 
+- Added more fxp compatibility
+    - bdcc0a3 2016-03-29 fixed readme (sol@hiqdev.com)
+    - debcf41 2016-03-29 phpcsfixed (sol@hiqdev.com)
+    - a39a629 2016-03-29 fixed tests (sol@hiqdev.com)
+    - 03865ca 2016-03-29 added fxp destination dir (bower/npm-asset-library) compatibility and RC config files writing (sol@hiqdev.com)
+    - c58e438 2016-03-29 simplifying NOT FINISHED (sol@hiqdev.com)
+    - 6e65a98 2016-03-28 fixed typo (sol@hiqdev.com)
+    - fc5a3ec 2016-03-28 ADDED fxp compatibility with removeAssetDependencies NOT FINISHED (sol@hiqdev.com)
+    - e20c104 2016-03-28 fixed Constraint tests (sol@hiqdev.com)
+    - 4888cae 2016-03-28 redone with `composer/semver` (sol@hiqdev.com)
+    - ba8b66e 2016-03-28 + bower specific `fixConstraint` (sol@hiqdev.com)
+    - 5540a6a 2016-03-28 typo fixed (sol@hiqdev.com)
+    - 532dd3d 2016-03-28 rehideved (sol@hiqdev.com)
     - 0b917ba 2016-03-26 + Constraint class with tests (sol@hiqdev.com)
     - 0d6cc4b 2016-03-26 + `PackageManager::addDependency` (sol@hiqdev.com)
 - Added basics
