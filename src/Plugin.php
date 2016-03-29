@@ -219,13 +219,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param string $name package name
      * @return \Composer\Package\PackageInterface|null
      */
-    public function findPackage($name)
+    public function findPackage($name, $composer = null)
     {
-        foreach ($this->getPackages() as $package) {
-            if ($name === $package->getName()) {
-                return $package;
-            }
+        if ($composer === null) {
+            $composer = $this->composer;
         }
+
+        return $this->composer->getRepositoryManager()->findPackage('beelab/bowerphp', '*');
     }
 
     /**
@@ -296,9 +296,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function getVendorDir()
     {
         if ($this->vendorDir === null) {
-            $this->vendorDir = $this->composer->getConfig()->get('vendor-dir', '/');
+            $this->vendorDir = $this->findVendorDir($this->composer);
         }
 
         return $this->vendorDir;
+    }
+
+    public function findVendorDir($composer)
+    {
+        return $composer->getConfig()->get('vendor-dir', '/');
     }
 }

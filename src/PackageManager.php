@@ -344,10 +344,21 @@ abstract class PackageManager
      */
     public function detectBin()
     {
-        if ($this->plugin->findPackage($this->phpPackage)) {
-            return $this->plugin->getVendorDir() . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . $this->phpBin;
+        $pathes = [
+            static::buildPath([$this->plugin->getVendorDir(), 'bin', $this->phpBin]),
+            static::buildPath([$this->plugin->getComposer()->getConfig()->get('home'), 'vendor', 'bin', $this->phpBin]),
+        ];
+        foreach ($pathes as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
         }
 
         return $this->name;
+    }
+
+    public static function buildPath($parts)
+    {
+        return implode(DIRECTORY_SEPARATOR, array_filter($parts));
     }
 }
