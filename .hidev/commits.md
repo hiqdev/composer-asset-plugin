@@ -4,6 +4,8 @@ hiqdev/composer-asset-plugin commits history
 ## Under development
 
 - Added more fxp compatibility
+    - 4482609 2016-03-29 improved `detectBin` to check global installed phpBin too (sol@hiqdev.com)
+    - 09d6a51 2016-03-29 removed experiments (sol@hiqdev.com)
     - bdcc0a3 2016-03-29 fixed readme (sol@hiqdev.com)
     - debcf41 2016-03-29 phpcsfixed (sol@hiqdev.com)
     - a39a629 2016-03-29 fixed tests (sol@hiqdev.com)
