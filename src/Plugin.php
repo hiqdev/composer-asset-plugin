@@ -160,7 +160,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $res = [];
         foreach ($deptypes as $deptype => $method) {
             $requires = $package->$method();
-
             foreach ($requires as $reqkey => $require) {
                 $target = $require->getTarget();
                 if (strpos($target, '/') === false) {
@@ -271,11 +270,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function scanPackages()
     {
-        $extra = $this->composer->getPackage()->getExtra();
-        foreach ($this->managers as $manager) {
-            $var = $manager->getName() . '-asset-library';
-            if (isset($extra['asset-installer-paths'][$var])) {
-                $manager->setDestination($extra['asset-installer-paths'][$var]);
+        $rootPackage = $this->composer->getPackage();
+        if ($rootPackage) {
+            $extra = $rootPackage->getExtra();
+            foreach ($this->managers as $manager) {
+                $var = $manager->getName() . '-asset-library';
+                if (isset($extra['asset-installer-paths'][$var])) {
+                    $manager->setDestination($extra['asset-installer-paths'][$var]);
+                }
             }
         }
         foreach ($this->getPackages() as $package) {
