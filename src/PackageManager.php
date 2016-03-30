@@ -268,7 +268,7 @@ abstract class PackageManager
     {
         if ($this->rc) {
             $this->writeRc($this->rcfile, $this->rc);
-        } else {
+        } elseif (file_exists($this->rcfile)) {
             unlink($this->rcfile);
         }
         $this->writeJson($this->file, $this->config);
